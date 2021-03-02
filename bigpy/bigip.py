@@ -9,7 +9,7 @@ class Bigip:
 
     def __init__(self, address: str, username="admin", password="admin", key=None):
 
-        self.address = address
+        self.address = self._parse_address(address)
         self.username = username
         self.password = password
         self.key = key
@@ -20,6 +20,13 @@ class Bigip:
             self.get_auth_key()
         else:
             self.verify_key()
+
+    def _parse_address(self, address: str) -> str:
+
+        if "https://" in address:
+            return address
+        else:
+            return "https://" + address
 
     def verify_key(self):
 
