@@ -1,2 +1,2 @@
 from .virtual import Virtual
-from .pool import Pool
+from .pool import Pool, PoolMembers

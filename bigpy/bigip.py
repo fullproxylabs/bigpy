@@ -40,8 +40,6 @@ class Bigip:
 
     def get_auth_key(self):
 
-        print("generating_new_key")
-
         def generate_key():
 
             data = str({"username": self.username, "password": self.password, "loginProviderName": "tmos"})

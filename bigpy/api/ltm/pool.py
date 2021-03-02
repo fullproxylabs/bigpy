@@ -8,7 +8,33 @@ class _PoolObject(_ApiObject):
 
 class _PoolMemberObject(_ApiObject):
 
-    pass
+    def enable(self, bigip, pool) -> bool:
+
+        uri = "/mgmt/tm/ltm/pool/"
+        uri += self._f5_friendly_path(pool.fullPath)
+        uri += f"/members/{self._f5_friendly_path(self.fullPath)}"
+
+        data = '{"session": "user-enabled"}'
+
+        response = bigip.send_request(uri=uri,
+                                      method="PUT",
+                                      data=data)
+
+        return response.status_code == 200
+
+    def disable(self, bigip, pool) -> bool:
+
+        uri = "/mgmt/tm/ltm/pool/"
+        uri += self._f5_friendly_path(pool.fullPath)
+        uri += f"/members/{self._f5_friendly_path(self.fullPath)}"
+
+        data = '{"session": "user-disabled"}'
+
+        response = bigip.send_request(uri=uri,
+                                      method="PUT",
+                                      data=data)
+
+        return response.status_code == 200
 
 
 class PoolMembers(Api):
@@ -17,7 +43,7 @@ class PoolMembers(Api):
 
         super().__init__(bigip)
         self.pool = pool
-        self.uri = "/mgmt/tm/ltm/pool" + self._f5_friendly_path(pool.fullPath) + "/members/"
+        self.uri = "/mgmt/tm/ltm/pool/" + self._f5_friendly_path(pool.fullPath) + "/members/"
 
     def get_pool_members(self):
 
