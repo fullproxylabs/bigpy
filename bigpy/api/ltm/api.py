@@ -16,6 +16,10 @@ class _ApiObject:
 
         return repr(self.__dict__)
 
+    def __delete__(self, instance):
+
+        pass
+
     def _f5_friendly_path(self, fullpath: str) -> str:
         return fullpath.replace("/", "~")
 
