@@ -48,3 +48,5 @@ print(virtual.generation)
 bigpy.Bigip.ltm.Virtual
 
 bigpy.Bigip.ltm.Pool
+
+bigpy.Bigip.ltm.Pool.members
