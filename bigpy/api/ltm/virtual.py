@@ -13,14 +13,14 @@ class Virtual(Api):
         super().__init__(bigip)
         self.uri = "/mgmt/tm/ltm/virtual/"
 
-    def get_virtual_server(self, fullpath: str):
+    def get_virtual_server(self, fullpath: str) -> _VirtualObject:
 
         uri = self.uri + self._f5_friendly_path(fullpath)
         response = self._api_request(uri=uri, method="get")
 
         return _VirtualObject(response)
 
-    def get_virtual_servers(self):
+    def get_virtual_servers(self) -> _VirtualObject:
 
         response = self._api_request(uri=self.uri, method="get")
 
