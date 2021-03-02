@@ -1,6 +1,8 @@
 # BigPy
 
-A Python Library designed to interact with iControl REST API and provide OOP principles to access various F5 Objects 
+A Python Library designed to interact with iControl REST API and provide OOP principles to access various F5 Objects.
+
+Currently only supports viewing attributes.
 
 ## Features
 
