@@ -13,7 +13,7 @@ import bigpy
 my_f5 = bigpy.Bigip(address="127.0.0.1")
 
 virtual_cursor = my_f5.ltm.Virtual()
-for virtual in virtual_cursor.get_virtual_servers:
+for virtual in virtual_cursor.get_virtual_servers():
     print(virtual.destination)
     print(virtual.generation)
     ...etc
