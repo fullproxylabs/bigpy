@@ -4,7 +4,7 @@ A Python Library designed to interact with iControl REST API and provide OOP pri
 
 ## Features
 
-### F5 LTM Virtual Servers are now Python Objects
+### F5 LTM Objects are now Python Objects
 
 #### Example - Get all Virtual Servers
 ```py
@@ -42,3 +42,8 @@ print(virtual.generation)
 >> 87938
 >>> ...etc
 ```
+
+##### Supported LTM Objects
+
+bigpy.Bigip.ltm.Virtual
+bigpy.Bigip.ltm.Pool

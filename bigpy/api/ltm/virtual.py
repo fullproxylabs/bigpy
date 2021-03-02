@@ -1,24 +1,16 @@
-import json
-import requests
+from .api import Api, _ApiObject
 
 
-class _VirtualObject:
+class _VirtualObject(_ApiObject):
 
-    def __init__(self, response: dict):
-
-        for key in response:
-            setattr(self, key, response[key])
-
-    def __str__(self):
-
-        return str(self.__dict__)
+    pass
 
 
-class Virtual:
+class Virtual(Api):
 
     def __init__(self, bigip):
 
-        self.bigip = bigip
+        super().__init__(bigip)
         self.uri = "/mgmt/tm/ltm/virtual/"
 
     def get_virtual_server(self, fullpath: str):
@@ -34,15 +26,3 @@ class Virtual:
 
         for virtual in response["items"]:
             yield _VirtualObject(virtual)
-
-    def _f5_friendly_path(self, fullpath: str) -> str:
-
-        return fullpath.replace("/", "~")
-
-    def _api_request(self, uri: str, method: str) -> dict:
-
-        response = self.bigip.send_request(uri=uri,
-                                           method=method)
-
-        response = json.loads(response.text)
-        return response
