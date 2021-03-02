@@ -2,7 +2,7 @@
 
 A Python Library designed to interact with iControl REST API and provide OOP principles to access various F5 Objects.
 
-Currently only supports viewing attributes.
+Very Early Alpha. Expect huge rewrites
 
 ## Features
 
@@ -24,6 +24,18 @@ for virtual in virtual_cursor.get_virtual_servers():
 >> "/Common/127.0.0.1:443"
 >> 87938
 >>> ...etc
+```
+
+#### Example - Disable a Virtual Server
+```py
+import bigpy
+
+my_f5 = bigpy.Bigip(address="127.0.0.1")
+
+virtual_cursor = my_f5.ltm.Virtual()
+virtual = virtual_cursor.get_virtual_server("/Common/VirtualServerName")
+
+virtual.disable()
 ```
 
 #### Example - Get a specified Virtual Server
