@@ -3,7 +3,27 @@ from .api import Api, _ApiObject
 
 class _VirtualObject(_ApiObject):
 
-    pass
+    def disable(self, bigip) -> bool:
+
+        uri = f"/mgmt/tm/ltm/virtual/{self._f5_friendly_path(self.fullPath)}"
+        data = '{"disabled": true}'
+
+        response = bigip.send_request(uri=uri,
+                           method="PATCH",
+                           data=data)
+
+        return response.status_code == 200
+
+    def enable(self, bigip) -> bool:
+
+        uri = f"/mgmt/tm/ltm/virtual/{self._f5_friendly_path(self.fullPath)}"
+        data = '{"enabled": true}'
+
+        response = bigip.send_request(uri=uri,
+                                      method="PATCH",
+                                      data=data)
+
+        return response.status_code == 200
 
 
 class Virtual(Api):
