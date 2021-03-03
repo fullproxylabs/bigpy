@@ -1,9 +1,19 @@
 from .api import Api, _ApiObject
+import json
 
 
 class _PoolObject(_ApiObject):
 
-    pass
+    def stats(self, bigip):
+
+        uri = f"/mgmt/tm/ltm/pool/{self._f5_friendly_path(self.fullPath)}/members/stats"
+
+        response = bigip.send_request(uri=uri,
+                                      method="GET")
+
+        response = json.loads(response.text)
+
+        return response["entries"]
 
 
 class _PoolMemberObject(_ApiObject):
