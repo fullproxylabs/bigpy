@@ -1,4 +1,5 @@
 from .api import Api, _ApiObject
+import json
 
 
 class _VirtualObject(_ApiObject):
@@ -24,6 +25,19 @@ class _VirtualObject(_ApiObject):
                                       data=data)
 
         return response.status_code == 200
+
+    def stats(self, bigip) -> dict:
+
+        uri = f"/mgmt/tm/ltm/virtual/{self._f5_friendly_path(self.fullPath)}/stats"
+
+        response = bigip.send_request(uri=uri,
+                                      method="GET")
+
+        response = json.loads(response.text);
+
+        data = response["entries"]["https://localhost"+uri]["nestedStats"]["entries"]
+
+        return data
 
 
 class Virtual(Api):
