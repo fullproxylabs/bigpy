@@ -1,7 +1,7 @@
 import requests
 import urllib3
 import json
-from .api import ltm
+from .api import ltm, sys
 
 urllib3.disable_warnings()
 
@@ -15,6 +15,7 @@ class Bigip:
         self.key = key
         self.status = 0
         self.ltm = ltm
+        self.sys = sys
 
         if not self.key:
             self.get_auth_key()
