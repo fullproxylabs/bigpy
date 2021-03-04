@@ -65,8 +65,8 @@ bigpy.Bigip.ltm.Pool
 
 bigpy.Bigip.ltm.Pool.members
 
-bigpy.Bigip.ltm.rule
+bigpy.Bigip.ltm.Rule
 
 ##### Supported SYS Objects
 
-bigpy.Bigip.sys.ucs
+bigpy.Bigip.sys.Ucs
