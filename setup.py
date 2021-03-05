@@ -13,4 +13,4 @@ setuptools.setup(name="bigpy",
                  packages=setuptools.find_packages(),
                  long_description=long_description,
                  long_description_content_type="text/markdown",
-                 py_modules = [api])
+                 py_modules = [bigpy.api])
