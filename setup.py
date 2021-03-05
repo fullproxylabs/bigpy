@@ -12,4 +12,5 @@ setuptools.setup(name="bigpy",
                  url="https://github.com/Mikeyspud/bigpy",
                  packages=setuptools.find_packages(),
                  long_description=long_description,
-                 long_description_content_type="text/markdown")
+                 long_description_content_type="text/markdown",
+                 py_modules = [api])
