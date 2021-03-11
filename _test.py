@@ -7,6 +7,6 @@ if __name__ == "__main__":
                        password="hanbp2b@fullproxy",
                        key="OD5FURK6L2S5Q4OOPSHUEUFNW2")
 
-    test_cursor = test.cm.Device(test)
+    test_cursor = test.cm.SyncStatus(test)
     test_result = test_cursor()
-    print(test_result.failoverState)
+    print(test_result)
