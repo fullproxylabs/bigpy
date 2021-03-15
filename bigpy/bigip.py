@@ -1,107 +1,97 @@
 import requests
 import urllib3
-import json
-from .api import ltm, sys, cm
+from .ltm import Ltm
+from .sys import Sys
+from .cm import Cm
 
 urllib3.disable_warnings()
 
+
 class Bigip:
 
-    def __init__(self, address: str, username="admin", password="admin", key=None):
+    def __init__(self, address, **kwargs):
 
-        self.address = self._parse_address(address)
-        self.username = username
-        self.password = password
-        self.key = key
-        self.status = 0
-        self.ltm = ltm
-        self.sys = sys
-        self.cm = cm
+        self.address = address
+        self.username = kwargs.get("username", "admin")
+        self.password = kwargs.get("password", "admin")
+        self.token = kwargs.get("token")
+        self.verify = kwargs.get("verify", True)
+        self.ltm = Ltm(self)
+        self.sys = Sys(self)
+        self.cm = Cm(self)
 
-        if not self.key:
-            self.get_auth_key()
+        if not self.token:
+            self.request_token()
         else:
-            self.verify_key()
+            self.verify_token()
 
-    def _parse_address(self, address: str) -> str:
+    def __str__(self) -> str:
 
-        if "https://" in address:
-            return address
-        else:
-            return "https://" + address
+        return f"Bigip: {self.address}\nUsername: {self.username}\nPassword: {'*' * len(self.password)}"
 
-    def verify_key(self):
+    def __repr__(self) -> str:
 
-        response = self.send_request(method="GET",
-                                     uri=f"/mgmt/shared/authz/tokens/{self.key}",
-                                     status=[200, 401])
+        return f"Bigip('{self.username}', '{self.password}', '{self.address}', {self.verify}, '{self.token}')"
+
+    def verify_token(self):
+
+        uri = self.__dict__.get(
+            "__token_self_link",
+            f"/mgmt/shared/authz/tokens/{self.token}")
+        response = self.request(uri=uri,
+                                method="get")
 
         if response.status_code == 401:
-            self.key = None
-            self.get_auth_key()
+            self.request_token
 
-    def get_auth_key(self):
+    def request_token(self) -> None:
 
-        def generate_key():
+        def _increase_timeout(selfLink: str):
 
-            data = str({"username": self.username, "password": self.password, "loginProviderName": "tmos"})
+            request_body = str({"timeout": "36000"})
+            self.request(uri=selfLink,
+                         method="patch",
+                         data=request_body)
 
-            response = self.send_request(method="POST",
-                                         uri="/mgmt/shared/authn/login",
-                                         data=data,
-                                         status=[200, 401, 444])
+        request_body = str({"username": self.username,
+                            "password": self.password,
+                            "loginProviderName": "tmos"})
 
+        response = self.request(uri="/mgmt/shared/authn/login",
+                                method="post",
+                                data=request_body)
 
-            if self.status == 200:
-                self.key = json.loads(response.text)["token"]["token"]
+        response_json = response.json()
 
-        def increase_timeout():
+        self.token = (response_json)["token"]["token"]
+        self.__token_self_link = self.extract_uri(
+            response_json["token"]["selfLink"])
+        _increase_timeout(self.__token_self_link)
 
-            data = str({"timeout": "36000"})
+    def request(self, uri:str, method:str, data=None, **kwargs) -> requests.Response:
 
-            self.send_request(method="PATCH",
-                              uri=f"/mgmt/shared/authz/tokens/{self.key}",
-                              data=data,
-                              status=[200, 401])
+        request_methods = {"get": requests.get,
+                           "post": requests.post,
+                           "delete": requests.delete,
+                           "patch": requests.patch}
 
-        generate_key()
-        if self.key:
-            increase_timeout()
-
-    def send_request(self, uri: str, method: str, data=None, status=[200]) -> requests.Response:
-
-        headers = {"Content-Type": "application/json"}
-        url = self.address + uri
-
-        if data:
-            data = str(data)
-
-        if self.key:
-            headers["X-F5-Auth-Token"] = self.key
-
-        request_dict = {"GET": requests.get,
-                        "POST": requests.post,
-                        "DELETE": requests.delete,
-                        "PATCH": requests.patch,
-                        "PUT": requests.put}
-
-        request_object = request_dict[method.upper()]
-
-        try:
-            response = request_object(url=url,
-                                      headers=headers,
-                                      data=data,
-                                      verify=False)
-        except requests.exceptions.ConnectionError:
-            self.status = 522
-
-        if response.status_code not in status:
-            self.error_handler(response)
+        if kwargs.get("headers"):
+            kwargs["headers"] = {**kwargs["headers"],
+                                 **{"X-F5-Auth-Token": self.token}}
         else:
-            self.status = response.status_code
+            kwargs["headers"] = {"X-F5-Auth-Token": self.token}
+
+        response = request_methods[method.lower()](
+            url=self.address + uri, verify=self.verify, data=data, **kwargs)
 
         return response
 
-    def error_handler(self, response):
+    @staticmethod
+    def resource_identifier(path: str) -> str:
 
-        raise Exception(response.text)
+        return path.replace("/", "~")
+
+    @staticmethod
+    def extract_uri(selfLink: str) -> str:
+
+        return selfLink.split("https://localhost")[1]
