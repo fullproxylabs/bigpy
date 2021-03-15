@@ -5,6 +5,7 @@ class _Base:
         self.bigip = bigip
         for key, value in response_data.items():
             setattr(self, key, value)
+        delattr(self, "bigip")
 
     def __str__(self):
 
