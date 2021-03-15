@@ -16,4 +16,4 @@ class Device:
     def __call__(self):
 
         response = self.bigip.request(uri=self.uri, method="get")
-        return _Device(response.json())
+        return _Device(self.bigip, response.json())

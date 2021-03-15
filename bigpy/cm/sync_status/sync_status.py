@@ -16,4 +16,4 @@ class Sync_status:
     def __call__(self):
 
         response = self.bigip.request(uri=self.uri, method="get")
-        return _Sync_status(response.json())
+        return _Sync_status(self.bigip, response.json())
