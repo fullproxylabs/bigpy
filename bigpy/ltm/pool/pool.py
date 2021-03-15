@@ -1,9 +1,15 @@
 from ...base import _Base
-
+from .members import Member
 
 class _Pool(_Base):
 
-    pass
+    def stats(self):
+
+        uri = self.bigip.extract_uri(self.selfLink) + "/members/stats"
+        response = self.bigip.request(uri=uri, method="get")
+
+        data = response.json()["entries"]
+        return data
 
 
 class Pool:
@@ -12,6 +18,7 @@ class Pool:
 
         self.bigip = bigip
         self.uri = "/mgmt/tm/ltm/pool/"
+        self.members = Member(bigip)
     
     def __call__(self, **kwargs):
 
@@ -19,6 +26,13 @@ class Pool:
             uri = self.uri + self.bigip.resource_identifier(kwargs.get("pool"))
         elif kwargs.get("selfLink"):
             uri = self.bigip.extract_uri(kwargs.get("selfLink"))
+        else:
+            uri = self.uri
 
         response = self.bigip.request(uri=uri, method="get")
-        return _Pool(response.json())
+
+        if "items" in response.json():
+            for pool in response.json()["items"]:
+                yield _Pool(self.bigip, pool)
+        else:
+            yield _Pool(self.bigip, response.json())

@@ -21,4 +21,4 @@ class Source_addr:
             uri = self.bigip.extract_uri(kwargs.get("selfLink"))
 
         response = self.bigip.request(uri=uri, method="get")
-        return _Source_addr(response.json())
+        return _Source_addr(self.bigip, response.json())

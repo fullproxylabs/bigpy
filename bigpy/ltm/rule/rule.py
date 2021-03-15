@@ -15,7 +15,17 @@ class Rule:
 
     def __call__(self, **kwargs):
 
-        rule_path = self.bigip.resource_path(kwargs.get("rule", ""))
-        response = self.bigip.request(uri=self.uri + rule_path, method="get")
-        
-        return _Rule(response)
+        if kwargs.get("rule"):
+            uri = self.uri + self.bigip.resource_identifier(kwargs.get("rule"))
+        elif kwargs.get("selfLink"):
+            uri = self.bigip.extract_uri(kwargs.get("selfLink"))
+        else:
+            uri = self.uri
+
+        response = self.bigip.request(uri=uri, method="get")
+
+        if "items" in response.json():
+            for rule in response.json()["items"]:
+                yield _Rule(self.bigip, rule)
+        else:
+            yield _Rule(self.bigip, response.json())

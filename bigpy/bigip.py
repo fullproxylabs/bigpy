@@ -73,7 +73,8 @@ class Bigip:
         request_methods = {"get": requests.get,
                            "post": requests.post,
                            "delete": requests.delete,
-                           "patch": requests.patch}
+                           "patch": requests.patch,
+                           "put": requests.put}
 
         if kwargs.get("headers"):
             kwargs["headers"] = {**kwargs["headers"],
@@ -94,4 +95,4 @@ class Bigip:
     @staticmethod
     def extract_uri(selfLink: str) -> str:
 
-        return selfLink.split("https://localhost")[1]
+        return selfLink.split("https://localhost")[1].split("?")[0]
