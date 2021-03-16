@@ -5,7 +5,7 @@ class _Pool(_Base):
 
     def stats(self):
 
-        uri = self.bigip.extract_uri(self.selfLink) + "/members/stats"
+        uri = self.bigip.extract_uri(self.selfLink) + "/stats"
         response = self.bigip.request(uri=uri, method="get")
 
         data = response.json()["entries"]

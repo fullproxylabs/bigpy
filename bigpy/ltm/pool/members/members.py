@@ -3,6 +3,13 @@ from ....base import _Base
 
 class _Member(_Base):
 
+    def stats(self):
+
+        uri = self.bigip.extract_uri(self.selfLink) + "/stats"
+        response = self.bigip.request(uri=uri, method="get")
+
+        return response.json()
+
     def enable(self):
 
         uri = self.bigip.extract_uri(self.selfLink)
