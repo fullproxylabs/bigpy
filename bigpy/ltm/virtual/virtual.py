@@ -22,10 +22,14 @@ class _Virtual(_Base):
 
     def stats(self):
 
-        uri = self.bigip.extract_uri(self.selfLink) + "/stats"
-        response = self.bigip.request(uri=uri, method="get")
-
-        data = response.json()["entries"]["https://localhost" + uri]["nestedStats"]["entries"]
+        uri = self.bigip.extract_uri(self.selfLink)
+        response = self.bigip.request(uri=uri + "/stats", method="get")
+        print("#######################")
+        print(uri)
+        print('#############################')
+        print(response.json())
+        print('#################')
+        data = response.json()["entries"]["https://localhost" + uri + "/" + self.fullPath.replace("/", "~") + "/stats"]["nestedStats"]["entries"]
         return data
 
 
