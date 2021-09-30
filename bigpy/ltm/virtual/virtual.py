@@ -24,7 +24,7 @@ class _Virtual(_Base):
 
         uri = self.bigip.extract_uri(self.selfLink)
         response = self.bigip.request(uri=uri + "/stats", method="get")
-
+        print(uri)
         data = response.json()["entries"]["https://localhost" + uri + "/stats"]["nestedStats"]["entries"]
         return data
 
